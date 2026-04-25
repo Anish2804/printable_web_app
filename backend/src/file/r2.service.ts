@@ -13,8 +13,8 @@ const s3 = new S3Client({
   },
 });
 
-const BUCKET_NAME = process.env.R2_BUCKET_NAME!;
-const PUBLIC_URL = process.env.R2_PUBLIC_URL!; // e.g. https://pub-xxx.r2.dev
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'printable-files';
+const PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://pub-f7a7a8f39e354321867ddc9b68d0fb3e.r2.dev'; // e.g. https://pub-xxx.r2.dev
 
 export async function getUploadUrl(fileName: string, contentType: string) {
   const key = `${nanoid(10)}-${fileName}`;
