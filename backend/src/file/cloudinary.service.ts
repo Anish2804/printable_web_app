@@ -104,3 +104,72 @@ export async function deleteFromCloudinary(url: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Cleanup: Delete ALL files in the Cloudinary folder.
+ * Called every 24 hours by the cron job.
+ */
+export async function cleanupAllCloudinaryFiles(): Promise<void> {
+  const folder = process.env.CLOUDINARY_FOLDER ?? "printshop";
+  
+  // Re-initialize config here to ensure env vars are loaded
+  // (module-level config may run before dotenv is loaded)
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  try {
+    // Delete all resources (images)
+    let hasMore = true;
+    let nextCursor: string | undefined;
+    let totalDeleted = 0;
+
+    // Clean up image type resources
+    while (hasMore) {
+      const result: any = await cloudinary.api.resources({
+        type: "upload",
+        resource_type: "image",
+        prefix: folder,
+        max_results: 100,
+        ...(nextCursor ? { next_cursor: nextCursor } : {}),
+      });
+
+      const ids = result.resources?.map((r: any) => r.public_id) || [];
+      if (ids.length > 0) {
+        await cloudinary.api.delete_resources(ids, { resource_type: "image" });
+        totalDeleted += ids.length;
+      }
+
+      nextCursor = result.next_cursor;
+      hasMore = !!nextCursor;
+    }
+
+    // Clean up raw type resources (PDFs, DOCX)
+    hasMore = true;
+    nextCursor = undefined;
+    while (hasMore) {
+      const result: any = await cloudinary.api.resources({
+        type: "upload",
+        resource_type: "raw",
+        prefix: folder,
+        max_results: 100,
+        ...(nextCursor ? { next_cursor: nextCursor } : {}),
+      });
+
+      const ids = result.resources?.map((r: any) => r.public_id) || [];
+      if (ids.length > 0) {
+        await cloudinary.api.delete_resources(ids, { resource_type: "raw" });
+        totalDeleted += ids.length;
+      }
+
+      nextCursor = result.next_cursor;
+      hasMore = !!nextCursor;
+    }
+
+    console.log(`[Cloudinary Cleanup] Deleted ${totalDeleted} files from folder '${folder}'.`);
+  } catch (err) {
+    console.error("[Cloudinary Cleanup] Failed:", err);
+  }
+}

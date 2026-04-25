@@ -27,6 +27,12 @@ export default function OrderTracker({ order }: Props) {
       {/* Order meta */}
       <div className="bg-white border border-[#E8E8E8] rounded-xl p-4 mb-6">
         <div className="grid grid-cols-2 gap-4 text-xs">
+          {order.userName && (
+            <div className="col-span-2">
+              <p className="text-[#999] mb-0.5">Name</p>
+              <p className="font-bold text-sm">{order.userName}</p>
+            </div>
+          )}
           <div>
             <p className="text-[#999] mb-0.5">File</p>
             <p className="font-bold truncate">{order.fileName}</p>

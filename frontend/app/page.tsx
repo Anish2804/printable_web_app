@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function HomePage() {
   const router = useRouter();
@@ -15,6 +16,10 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#F2F3F7] flex flex-col items-center justify-center px-5 py-16">
+      {/* Theme toggle - top right */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       {/* Header */}
       <div className="mb-10 text-center">
         {/* Shop open badge */}

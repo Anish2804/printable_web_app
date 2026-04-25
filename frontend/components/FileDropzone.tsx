@@ -36,9 +36,11 @@ interface Props {
   onFilesChange: (entries: FileEntry[]) => void;
   entries: FileEntry[];
   onUploadFile: (id: string, file: File) => void;
+  onCancelUpload: (id: string) => void;
+  onRemoveFile: (id: string) => void;
 }
 
-export default function FileDropzone({ onFilesChange, entries, onUploadFile }: Props) {
+export default function FileDropzone({ onFilesChange, entries, onUploadFile, onCancelUpload, onRemoveFile }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [validationError, setValidationError] = useState("");
@@ -84,10 +86,6 @@ export default function FileDropzone({ onFilesChange, entries, onUploadFile }: P
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) addFiles(Array.from(e.target.files));
     e.target.value = "";
-  };
-
-  const removeEntry = (id: string) => {
-    onFilesChange(entries.filter((e) => e.id !== id));
   };
 
   const ext = (name: string) => name.split(".").pop()?.toUpperCase() ?? "FILE";
@@ -180,10 +178,21 @@ export default function FileDropzone({ onFilesChange, entries, onUploadFile }: P
                 )}
               </div>
 
-              {/* Remove */}
-              {entry.state !== "uploading" && (
+              {/* Cancel button (while uploading) */}
+              {entry.state === "uploading" && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); removeEntry(entry.id); }}
+                  onClick={(e) => { e.stopPropagation(); onCancelUpload(entry.id); }}
+                  className="text-red-400 hover:text-red-600 transition-colors shrink-0 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-red-50"
+                  title="Cancel upload"
+                >
+                  Cancel
+                </button>
+              )}
+
+              {/* Remove button (when done or error) */}
+              {(entry.state === "done" || entry.state === "error") && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onRemoveFile(entry.id); }}
                   className="text-[#CCC] hover:text-red-400 transition-colors shrink-0 text-sm px-1"
                   title="Remove"
                 >

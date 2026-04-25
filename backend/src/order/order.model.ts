@@ -28,6 +28,7 @@ export interface IOrderFile {
 
 export interface IOrder extends Document {
   orderId:           string;          // Short human-readable ID e.g. "ABC123"
+  userName:          string;          // User's name for order segregation
   files:             IOrderFile[];    // ≥1 files in this order
   status:            OrderStatus;
   paymentMode:       PaymentMode;
@@ -60,6 +61,11 @@ const OrderSchema = new Schema<IOrder>(
       required: true,
       unique:   true,
       uppercase: true,
+      trim:     true,
+    },
+    userName: {
+      type:     String,
+      required: true,
       trim:     true,
     },
     files: {

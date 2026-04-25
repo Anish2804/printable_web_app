@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import FileDropzone, { FileEntry, estimatePdfPages } from "@/components/FileDropzone";
@@ -41,6 +41,9 @@ export default function UploadPage() {
   const [globalError, setGlobalError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Track active XHR handles for cancel support
+  const xhrRefs = useRef<Record<string, XMLHttpRequest>>({});
+
   const handleFilesChange = useCallback((updated: FileEntry[]) => {
     setEntries(updated);
     setConfigs((prev) => {
@@ -62,14 +65,86 @@ export default function UploadPage() {
     setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, state: "uploading", progress: 0 } : e)));
     try {
       const sig = await api.getUploadSignature();
-      const url = await uploadToCloudinaryWithProgress(file, sig, (pct) => {
-        setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, progress: pct } : e)));
+
+      // Use XHR with abort support
+      const url = await new Promise<string>((resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", sig.apiKey);
+        formData.append("timestamp", String(sig.timestamp));
+        formData.append("signature", sig.signature);
+        formData.append("folder", sig.folder);
+
+        const xhr = new XMLHttpRequest();
+        xhrRefs.current[id] = xhr;
+        xhr.open("POST", `https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`);
+
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            setEntries((prev) => prev.map((ent) => (ent.id === id ? { ...ent, progress: pct } : ent)));
+          }
+        });
+
+        xhr.addEventListener("load", () => {
+          delete xhrRefs.current[id];
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const data = JSON.parse(xhr.responseText);
+              resolve(data.secure_url as string);
+            } catch {
+              reject(new Error("Invalid response from Cloudinary"));
+            }
+          } else {
+            try {
+              const err = JSON.parse(xhr.responseText);
+              reject(new Error(err?.error?.message ?? "Cloudinary upload failed"));
+            } catch {
+              reject(new Error(`HTTP ${xhr.status}`));
+            }
+          }
+        });
+
+        xhr.addEventListener("error", () => { delete xhrRefs.current[id]; reject(new Error("Network error during upload")); });
+        xhr.addEventListener("abort", () => { delete xhrRefs.current[id]; reject(new Error("Upload cancelled")); });
+
+        xhr.send(formData);
       });
+
       setEntries((prev) => prev.map((e) => e.id === id ? { ...e, state: "done", progress: 100, cloudinaryUrl: url } : e));
     } catch (err: any) {
-      setEntries((prev) => prev.map((e) => e.id === id ? { ...e, state: "error", error: err?.message ?? "Upload failed" } : e));
+      if (err?.message === "Upload cancelled") {
+        // If cancelled, just remove the entry
+        setEntries((prev) => prev.filter((e) => e.id !== id));
+      } else {
+        setEntries((prev) => prev.map((e) => e.id === id ? { ...e, state: "error", error: err?.message ?? "Upload failed" } : e));
+      }
     }
   }, []);
+
+  const handleCancelUpload = useCallback((id: string) => {
+    const xhr = xhrRefs.current[id];
+    if (xhr) {
+      xhr.abort();
+    }
+  }, []);
+
+  const handleRemoveFile = useCallback((id: string) => {
+    // Cancel if still uploading
+    const xhr = xhrRefs.current[id];
+    if (xhr) xhr.abort();
+
+    setEntries((prev) => {
+      const updated = prev.filter((e) => e.id !== id);
+      // If the active file was removed, switch to first remaining
+      if (activeFileId === id) {
+        const remaining = updated.filter((e) => e.state === "done");
+        setActiveFileId(remaining.length > 0 ? remaining[0].id : null);
+        setCurrentPage(1);
+      }
+      return updated;
+    });
+  }, [activeFileId]);
 
   const handleAdditionalFiles = async (rawFiles: File[]) => {
     const newEntries: FileEntry[] = [];
@@ -127,6 +202,8 @@ export default function UploadPage() {
   };
 
   const isPdf = activeEntry?.file?.type === "application/pdf";
+  const isImage = activeEntry?.file?.type?.startsWith("image/");
+  const isDocx = activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   const showConfig = readyEntries.length > 0 && activeEntry;
 
   return (
@@ -167,6 +244,8 @@ export default function UploadPage() {
               entries={entries}
               onFilesChange={handleFilesChange}
               onUploadFile={handleUploadFile}
+              onCancelUpload={handleCancelUpload}
+              onRemoveFile={handleRemoveFile}
             />
             {globalError && <p className="text-red-500 text-xs mt-2">{globalError}</p>}
           </div>
@@ -206,13 +285,14 @@ export default function UploadPage() {
                   totalPages={activeConfig.totalPages}
                   onTotalPages={(n) => updateConfig(activeEntry.id, { totalPages: n, pages: countPagesInRange(activeConfig.pageRange, n) })}
                   onPageChange={setCurrentPage}
-                  onClose={() => handleFilesChange(entries.filter((e) => e.id !== activeFileId))}
+                  onClose={() => handleRemoveFile(activeEntry.id)}
                 />
-              ) : activeEntry?.file ? (
+              ) : isImage && activeEntry?.file ? (
+                /* Image preview */
                 <div className="relative bg-white rounded-2xl shadow-sm border border-[#E8E8E8] p-4 text-center">
                   <button
-                    onClick={() => handleFilesChange(entries.filter((e) => e.id !== activeFileId))}
-                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#F2F3F7] flex items-center justify-center text-xl text-[#999] hover:bg-[#E8E8E8]"
+                    onClick={() => handleRemoveFile(activeEntry.id)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#F2F3F7] flex items-center justify-center text-xl text-[#999] hover:bg-[#E8E8E8] z-10"
                   >
                     ×
                   </button>
@@ -227,6 +307,29 @@ export default function UploadPage() {
                         transform: activeConfig.orientation === "landscape" ? "rotate(-90deg) scale(0.75)" : "none",
                       }}
                     />
+                  </div>
+                </div>
+              ) : activeEntry?.file ? (
+                /* DOCX / other file preview placeholder */
+                <div className="relative bg-white rounded-2xl shadow-sm border border-[#E8E8E8] p-6 text-center">
+                  <button
+                    onClick={() => handleRemoveFile(activeEntry.id)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#F2F3F7] flex items-center justify-center text-xl text-[#999] hover:bg-[#E8E8E8] z-10"
+                  >
+                    ×
+                  </button>
+                  <div className="flex flex-col items-center justify-center min-h-[260px] gap-3">
+                    <div className="w-20 h-24 bg-gradient-to-br from-[#4285F4] to-[#1967D2] rounded-lg flex flex-col items-center justify-center shadow-lg">
+                      <span className="text-white text-2xl mb-1">📄</span>
+                      <span className="text-white text-[10px] font-bold uppercase tracking-wider">
+                        {isDocx ? "DOCX" : activeEntry.file.name.split(".").pop()?.toUpperCase() || "FILE"}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-[#1A1A1A] truncate max-w-[280px]">{activeEntry.file.name}</p>
+                    <p className="text-xs text-[#999]">{(activeEntry.file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <div className="flex items-center gap-2 bg-[#E8F5E9] text-[#0C831F] px-3 py-1.5 rounded-lg text-xs font-semibold">
+                      <span>✓</span> Ready for print
+                    </div>
                   </div>
                 </div>
               ) : null}

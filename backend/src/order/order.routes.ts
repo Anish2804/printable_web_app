@@ -20,7 +20,7 @@ export const orderRouter = Router();
 // Body: { files: FileInput[], paymentMode: "online" | "offline" }
 orderRouter.post("/", async (req: Request, res: Response) => {
   try {
-    const { files, paymentMode } = req.body;
+    const { files, paymentMode, userName } = req.body;
 
     if (!files || !Array.isArray(files) || files.length === 0) {
       res.status(400).json({ error: "files array is required and must not be empty" });
@@ -29,6 +29,11 @@ orderRouter.post("/", async (req: Request, res: Response) => {
 
     if (!paymentMode) {
       res.status(400).json({ error: "paymentMode is required" });
+      return;
+    }
+
+    if (!userName || typeof userName !== "string" || userName.trim().length === 0) {
+      res.status(400).json({ error: "userName is required" });
       return;
     }
 
@@ -52,6 +57,7 @@ orderRouter.post("/", async (req: Request, res: Response) => {
         pageRange:     String(f.pageRange || 'all'),
       })),
       paymentMode,
+      userName: userName.trim(),
     });
 
     res.status(201).json(result);

@@ -49,6 +49,7 @@ export const api = {
       fileName: string;
     })[];
     paymentMode: PaymentMode;
+    userName: string;
   }) =>
     post<{ orderId: string; razorpayOrderId?: string; amount?: number }>(
       "/orders",

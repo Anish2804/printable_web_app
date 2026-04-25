@@ -30,10 +30,11 @@ function calcPrice(c: PrintConfig): number {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>("online");
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("offline");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [jobs, setJobs] = useState<PrintJob[]>([]);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const stored = sessionStorage.getItem("printJobs");
@@ -46,14 +47,27 @@ export default function CheckoutPage() {
     } else {
       router.push("/upload");
     }
+    // Restore username if previously entered
+    const savedName = sessionStorage.getItem("userName");
+    if (savedName) setUserName(savedName);
   }, [router]);
 
   const totalAmount = jobs.reduce((s, j) => s + calcPrice(j.config), 0);
 
   const handlePlaceOrder = async () => {
     if (!jobs.length) return;
+
+    // Validate userName
+    if (!userName.trim()) {
+      setError("Please enter your name before placing the order.");
+      return;
+    }
+
     setLoading(true);
     setError("");
+
+    // Save userName for next time
+    sessionStorage.setItem("userName", userName.trim());
 
     try {
       const payload = {
@@ -65,6 +79,7 @@ export default function CheckoutPage() {
           pages: countPagesInRange(job.config.pageRange, job.config.totalPages),
         })),
         paymentMode,
+        userName: userName.trim(),
       };
 
       if (paymentMode === "offline") {
@@ -126,6 +141,20 @@ export default function CheckoutPage() {
             ? "Review and pay"
             : `${jobs.length} files · review and pay`}
         </p>
+
+        {/* Username input */}
+        <div className="bg-white border border-[#E8E8E8] rounded-2xl p-4 mb-4">
+          <label className="text-sm font-semibold text-[#1A1A1A] mb-2 block">Your Name</label>
+          <input
+            type="text"
+            placeholder="Enter your name (e.g. Aayush)"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="w-full bg-[#F2F3F7] border border-[#E8E8E8] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-[#CCC] outline-none focus:border-[#0C831F] transition-colors"
+            maxLength={50}
+          />
+          <p className="text-[10px] text-[#999] mt-1.5">This name will appear on your order</p>
+        </div>
 
         {/* File(s) summary */}
         <div className="space-y-3 mb-6">

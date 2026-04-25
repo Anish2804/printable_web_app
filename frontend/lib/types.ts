@@ -24,6 +24,7 @@ export interface PrintConfig {
 export interface Order {
   _id: string;
   orderId: string;          // Short human-readable ID e.g. "ABC123"
+  userName: string;         // User's name for order segregation
   fileName: string;
   cloudinaryUrl: string;
   pages: number;

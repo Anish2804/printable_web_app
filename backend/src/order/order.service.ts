@@ -45,6 +45,7 @@ export interface FileInput {
 interface CreateOrderInput {
   files:       FileInput[];   // ≥1 files
   paymentMode: "online" | "offline";
+  userName:    string;
 }
 
 interface CreateOrderResult {
@@ -91,6 +92,7 @@ export async function createOrder(
 
   await Order.create({
     orderId,
+    userName: input.userName,
     files,
     paymentMode: input.paymentMode,
     totalAmount,
