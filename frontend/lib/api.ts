@@ -1,7 +1,7 @@
 // FILE: apps/web/lib/api.ts
 // All API calls to the Express backend — single source of truth for endpoints
 
-import type { Order, PrintConfig, PaymentMode } from "@/lib/types";
+import type { Order, PrintConfig, PaymentMode, OrderStatus } from "@/lib/types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -44,9 +44,10 @@ export const api = {
 
   /** Create a new print order */
   createOrder: (payload: {
-    files: (PrintConfig & {
+    files: (Partial<PrintConfig> & {
       cloudinaryUrl: string;
       fileName: string;
+      pages: number;
     })[];
     paymentMode: PaymentMode;
     userName: string;
@@ -60,5 +61,16 @@ export const api = {
   getOrder: (id: string) => get<Order>(`/orders/${id}`),
 
   /** Get all pending orders (used by desktop poller as proxy via Next.js route) */
-  getPendingOrders: () => get<Order[]>("/orders?status=pending"),
+  getPendingOrders: () => get<Order[]>("/orders?status=pending_payment"),
+
+  /** Update order status (Admin/Desktop usage) */
+  updateOrderStatus: (id: string, status: OrderStatus) =>
+    patch<Order>(`/orders/${id}/status`, { status }),
+
+  /** Confirm cash payment (Admin/Desktop usage) */
+  confirmCashPayment: (id: string) =>
+    patch<Order>(`/orders/${id}/confirm-payment`, {}),
+    
+  /** Health check */
+  health: () => get<{ ok: boolean }>("/health"),
 };

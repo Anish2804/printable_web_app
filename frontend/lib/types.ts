@@ -21,19 +21,23 @@ export interface PrintConfig {
   pageRange: string;  // "all" or "1-3,5,8" etc.
 }
 
+export interface IOrderFile {
+  fileName:      string;
+  cloudinaryUrl: string;
+  pages:         number;
+  copies:        number;
+  colour:        boolean;
+  duplex:        boolean;
+  orientation:   string;
+  pageRange:     string;
+  amount:        number;
+}
+
 export interface Order {
   _id: string;
   orderId: string;          // Short human-readable ID e.g. "ABC123"
   userName: string;         // User's name for order segregation
-  fileName: string;
-  cloudinaryUrl: string;
-  pages: number;
-  totalPages: number;
-  copies: number;
-  colour: boolean;
-  duplex: boolean;
-  orientation: string;
-  pageRange: string;
+  files: IOrderFile[];      // Multi-file support
   status: OrderStatus;
   paymentMode: PaymentMode;
   totalAmount: number;
