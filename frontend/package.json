@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "jszip": "^3.10.1",
     "next": "16.2.4",
     "pdfjs-dist": "^3.11.174",
     "react": "19.2.4",

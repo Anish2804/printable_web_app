@@ -45,7 +45,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-        <p className="text-[#999] text-xs">Scan to open on your phone</p>
+        <p className="text-[#333] text-xs font-semibold">Scan to open on your phone</p>
       </div>
 
       {/* CTA */}
@@ -57,7 +57,7 @@ export default function HomePage() {
       </Link>
 
       {/* Track */}
-      <p className="text-[#999] text-xs mb-3">Track existing order? Enter order ID below</p>
+      <p className="text-[#333] text-xs mb-3 font-semibold">Track existing order? Enter order ID below</p>
       <div className="flex gap-2 w-full max-w-xs">
         <input
           type="text"
@@ -66,12 +66,12 @@ export default function HomePage() {
           onChange={(e) => setTrackId(e.target.value.toUpperCase())}
           onKeyDown={(e) => e.key === "Enter" && handleTrack()}
           maxLength={8}
-          className="flex-1 bg-white border border-[#E8E8E8] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-[#CCC] outline-none focus:border-[#0C831F] transition-colors uppercase tracking-widest"
+          className="flex-1 bg-white border-2 border-dashed border-[#B0B0B0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-[#999] outline-none focus:border-[#0C831F] focus:border-solid transition-all uppercase tracking-widest"
         />
         <button
           onClick={handleTrack}
           disabled={trackId.trim().length < 4}
-          className="bg-white border border-[#E8E8E8] hover:border-[#0C831F] disabled:opacity-40 disabled:cursor-not-allowed rounded-xl px-4 py-2.5 text-sm text-[#666] hover:text-[#0C831F] transition-colors font-semibold"
+          className="bg-white border border-[#E8E8E8] hover:border-[#0C831F] disabled:opacity-40 disabled:cursor-not-allowed rounded-xl px-4 py-2.5 text-sm text-[#333] hover:text-[#0C831F] transition-colors font-semibold"
         >
           Go
         </button>

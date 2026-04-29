@@ -1,10 +1,13 @@
 "use client";
 
 import { useRef, useState, DragEvent, ChangeEvent } from "react";
+import JSZip from "jszip";
 
 const ACCEPTED = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   "image/jpeg",
   "image/png",
 ];
@@ -20,16 +23,39 @@ export interface FileEntry {
   pageCount: number;
 }
 
-export async function estimatePdfPages(file: File): Promise<number> {
-  if (file.type !== "application/pdf") return 1;
-  try {
-    const buffer = await file.arrayBuffer();
-    const content = new TextDecoder().decode(buffer);
-    const matches = content.match(/\/Type\s*\/Page\b/g);
-    return matches ? matches.length : 1;
-  } catch {
-    return 1;
+export async function estimatePageCount(file: File): Promise<number> {
+  // 1. PDF - Regex check for /Page markers (rough estimate)
+  if (file.type === "application/pdf") {
+    try {
+      const buffer = await file.arrayBuffer();
+      // We only read a part of the buffer if it's huge, but for page count regex usually works on the whole thing
+      const content = new TextDecoder().decode(buffer.slice(0, 10 * 1024 * 1024)); // check first 10MB
+      const matches = content.match(/\/Type\s*\/Page\b/g);
+      return matches ? matches.length : 1;
+    } catch {
+      return 1;
+    }
   }
+
+  // 2. DOCX / PPTX - Extract from docProps/app.xml metadata
+  if (
+    file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    file.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  ) {
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const appXml = await zip.file("docProps/app.xml")?.async("string");
+      if (appXml) {
+        // <Pages>N</Pages> for Docx, <Slides>N</Slides> for Pptx
+        const match = appXml.match(/<(Pages|Slides)>(\d+)<\/(Pages|Slides)>/);
+        if (match) return parseInt(match[2], 10);
+      }
+    } catch (err) {
+      console.error("OOXML page count failed:", err);
+    }
+  }
+
+  return 1;
 }
 
 interface Props {
@@ -59,7 +85,7 @@ export default function FileDropzone({ onFilesChange, entries, onUploadFile, onC
     for (const f of rawFiles) {
       const err = validate(f);
       if (err) { errors.push(err); continue; }
-      const pages = await estimatePdfPages(f);
+      const pages = await estimatePageCount(f);
       newEntries.push({
         id: `${f.name}-${f.size}-${Date.now()}-${Math.random()}`,
         file: f,
@@ -109,11 +135,11 @@ export default function FileDropzone({ onFilesChange, entries, onUploadFile, onC
         <p className="text-sm text-[#1A1A1A] font-semibold mb-1">
           Drop files here or <span className="text-[#0C831F]">browse</span>
         </p>
-        <p className="text-xs text-[#999]">PDF · DOCX · JPG · PNG — multiple allowed</p>
+        <p className="text-xs text-[#999]">PDF · DOCX · PPT · JPG · PNG — multiple allowed</p>
         <input
           ref={inputRef}
           type="file"
-          accept=".pdf,.docx,.jpg,.jpeg,.png"
+          accept=".pdf,.docx,.ppt,.pptx,.jpg,.jpeg,.png"
           multiple
           className="hidden"
           onChange={onInputChange}

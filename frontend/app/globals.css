@@ -21,11 +21,29 @@
   --green:    #1BA636;
   --green-lt: rgba(27, 166, 54, 0.12);
   --green-md: rgba(27, 166, 54, 0.25);
-  --text:     #E4E4E7;
+  --text:     #FFFFFF;
   --muted:    #A0A0A5;
   --dim:      #6E6E73;
   --red:      #EF5350;
   --card-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+
+[data-theme="dark"] * {
+  color: var(--text);
+}
+
+[data-theme="dark"] .text-white, 
+[data-theme="dark"] .text-white * {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .text-\[\#999\],
+[data-theme="dark"] .text-\[\#666\] {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .text-\[\#0C831F\] {
+  color: var(--green) !important;
 }
 
 @theme inline {
@@ -38,7 +56,7 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Josefin Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.35s ease, color 0.35s ease;
@@ -192,4 +210,10 @@ body {
 /* Tags / badges */
 [data-theme="dark"] span[class*="bg-"] {
   color: var(--muted) !important;
+}
+
+/* Ensure black text stays black on light backgrounds in dark mode */
+[data-theme="dark"] .bg-\[\#E8E8E8\],
+[data-theme="dark"] .bg-\[\#E8E8E8\] * {
+  color: #000000 !important;
 }

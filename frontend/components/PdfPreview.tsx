@@ -120,13 +120,12 @@ export default function PdfPreview({
     };
   }, [pdfDoc, currentPage]);
 
-  // Generate thumbnails
+  // Generate thumbnails progressively
   useEffect(() => {
     if (!pdfDoc) return;
     let cancelled = false;
 
     async function generateThumbs() {
-      const results: string[] = [];
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         if (cancelled) break;
         try {
@@ -137,12 +136,15 @@ export default function PdfPreview({
           c.height = vp.height;
           const ctx = c.getContext("2d")!;
           await page.render({ canvasContext: ctx, viewport: vp }).promise;
-          results.push(c.toDataURL());
+          const dataUrl = c.toDataURL();
+          if (!cancelled) {
+            setThumbs((prev) => [...prev, dataUrl]);
+          }
         } catch (_) {}
       }
-      if (!cancelled) setThumbs(results);
     }
 
+    setThumbs([]);
     generateThumbs();
     return () => { cancelled = true; };
   }, [pdfDoc]);

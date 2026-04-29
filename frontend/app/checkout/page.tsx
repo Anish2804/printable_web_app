@@ -128,7 +128,7 @@ export default function CheckoutPage() {
             ← Back
           </a>
           <h1 className="text-sm font-bold">
-            <span className="flex items-center gap-2"><img src="/logo.jpg" alt="Printable logo" className="w-5 h-5 rounded-md object-cover bg-white"/><span>Print<span className="text-[#0C831F]">able</span></span></span>
+            <span className="flex items-center gap-2"><img src="/logo.jpg" alt="Printable logo" className="w-5 h-5 rounded-md object-cover bg-white" /><span>Print<span className="text-[#0C831F]">able</span></span></span>
           </h1>
           <div className="w-10" />
         </div>
@@ -147,7 +147,7 @@ export default function CheckoutPage() {
           <label className="text-sm font-semibold text-[#1A1A1A] mb-2 block">Your Name</label>
           <input
             type="text"
-            placeholder="Enter your name (e.g. Aayush)"
+            placeholder="Enter your name (e.g. Anish)"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             className="w-full bg-[#F2F3F7] border border-[#E8E8E8] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-[#CCC] outline-none focus:border-[#0C831F] transition-colors"
@@ -172,19 +172,19 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{job.fileName}</p>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      <span className="text-[10px] bg-[#E8E8E8] text-[#666] px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
                         {pc} page{pc > 1 ? "s" : ""}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-[#666] px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
                         {job.config.copies} cop{job.config.copies > 1 ? "ies" : "y"}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-[#666] px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
                         {job.config.colour ? "🎨 Colour" : "🖤 B&W"}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-[#666] px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
                         {job.config.duplex ? "📄 Both sides" : "📃 Single"}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-[#666] px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
                         {job.config.orientation === "landscape" ? "▭ Landscape" : "▯ Portrait"}
                       </span>
                     </div>
@@ -218,13 +218,13 @@ export default function CheckoutPage() {
             <button
               onClick={handlePlaceOrder}
               disabled={loading}
-              className="bg-[#e8642a] hover:bg-[#d4571f] disabled:opacity-50 text-white font-bold text-sm py-3.5 px-8 rounded-xl transition-all duration-200 tracking-wide uppercase shadow-lg shadow-[#e8642a]/20 active:scale-95"
+              className="bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] hover:opacity-90 disabled:opacity-50 text-white font-bold text-sm py-3.5 px-8 rounded-xl transition-all duration-200 tracking-wide uppercase shadow-lg shadow-[#0C831F]/20 active:scale-95"
             >
               {loading
                 ? "Processing…"
                 : paymentMode === "online"
-                ? "Pay Online →"
-                : `Place Order →`}
+                  ? "Pay Online →"
+                  : `Place Order →`}
             </button>
           </div>
           {paymentMode === "offline" && (

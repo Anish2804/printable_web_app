@@ -88,7 +88,7 @@ export default function PageRangeSelector({ totalPages, pageRange, onChange }: P
                   : "border-[#E8E8E8] bg-white text-[#666] hover:border-[#0C831F]/40"
               }`}
             >
-              {mode === "all" ? "📄 All pages" : "✂️ Custom"}
+              {mode === "all" ? "📄 All pages" : "✂️ Required Pages"}
             </button>
           );
         })}

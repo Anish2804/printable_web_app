@@ -22,15 +22,15 @@ export default function PaymentToggle({ mode, onChange }: Props) {
           onClick={() => onChange("offline")}
           className={`border rounded-xl p-4 text-left transition-all ${
             mode === "offline"
-              ? "border-[#e8642a] bg-[#e8642a]/5"
-              : "border-[#2e2c28] bg-[#1a1916] hover:border-[#e8642a]/40"
+              ? "border-[#0C831F] bg-gradient-to-r from-[#00B4D8]/10 via-[#10B981]/10 to-[#0C831F]/10 shadow-[0_0_15px_rgba(12,131,31,0.1)]"
+              : "border-[#E8E8E8] bg-white hover:border-[#0C831F]/40"
           }`}
         >
           <div className="text-xl mb-2">💵</div>
-          <p className={`text-sm font-bold mb-0.5 ${mode === "offline" ? "text-[#e8642a]" : ""}`}>
+          <p className={`text-sm font-bold mb-0.5 ${mode === "offline" ? "text-[#0C831F]" : "text-[#1A1A1A]"}`}>
             Pay at Shop (Cash)
           </p>
-          <p className="text-xs text-[#6b6860]">Cash on collection</p>
+          <p className="text-xs text-[#999]">Cash on collection</p>
         </button>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import FileDropzone, { FileEntry, estimatePdfPages } from "@/components/FileDropzone";
+import FileDropzone, { FileEntry, estimatePageCount } from "@/components/FileDropzone";
 import PrintOptionCard from "@/components/PrintOptionCard";
 import PageRangeSelector from "@/components/PageRangeSelector";
 import { uploadToR2WithProgress } from "@/lib/upload";
@@ -139,7 +139,7 @@ export default function UploadPage() {
         sizeError = `"${f.name}" is too large (max 500 MB)`;
         continue;
       }
-      const pages = await estimatePdfPages(f);
+      const pages = await estimatePageCount(f);
       newEntries.push({
         id: `${f.name}-${f.size}-${Date.now()}-${Math.random()}`,
         file: f,
@@ -194,6 +194,8 @@ export default function UploadPage() {
   const isPdf = activeEntry?.file?.type === "application/pdf";
   const isImage = activeEntry?.file?.type?.startsWith("image/");
   const isDocx = activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  const isPpt = activeEntry?.file?.type === "application/vnd.ms-powerpoint" || 
+                activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation";
   const showConfig = readyEntries.length > 0 && activeEntry;
 
   return (
@@ -253,7 +255,7 @@ export default function UploadPage() {
                     onClick={() => { setActiveFileId(e.id); setCurrentPage(1); }}
                     className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
                       activeFileId === e.id
-                        ? "bg-[#0C831F] text-white border-[#0C831F]"
+                        ? "bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] text-white border-transparent shadow-md shadow-[#0C831F]/20"
                         : "bg-white text-[#666] border-[#E8E8E8]"
                     }`}
                   >
@@ -309,10 +311,10 @@ export default function UploadPage() {
                     ×
                   </button>
                   <div className="flex flex-col items-center justify-center min-h-[260px] gap-3">
-                    <div className="w-20 h-24 bg-gradient-to-br from-[#4285F4] to-[#1967D2] rounded-lg flex flex-col items-center justify-center shadow-lg">
-                      <span className="text-white text-2xl mb-1">📄</span>
+                    <div className={`w-20 h-24 bg-gradient-to-br ${isDocx ? "from-[#4285F4] to-[#1967D2]" : isPpt ? "from-[#FF5722] to-[#D84315]" : "from-[#666] to-[#444]"} rounded-lg flex flex-col items-center justify-center shadow-lg`}>
+                      <span className="text-white text-2xl mb-1">{isPpt ? "📊" : "📄"}</span>
                       <span className="text-white text-[10px] font-bold uppercase tracking-wider">
-                        {isDocx ? "DOCX" : activeEntry.file.name.split(".").pop()?.toUpperCase() || "FILE"}
+                        {isDocx ? "DOCX" : isPpt ? "PPT" : activeEntry.file.name.split(".").pop()?.toUpperCase() || "FILE"}
                       </span>
                     </div>
                     <p className="text-sm font-semibold text-[#1A1A1A] truncate max-w-[280px]">{activeEntry.file.name}</p>
@@ -417,7 +419,7 @@ export default function UploadPage() {
                <button
                 onClick={handleNext}
                 disabled={!canSubmit}
-                className="w-full bg-[#0C831F] hover:bg-[#0a6e1a] disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0C831F]/20"
+                className="w-full bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] hover:opacity-90 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0C831F]/20"
               >
                 {submitting ? "Processing…" : "Add to cart"}
                 {!submitting && <span className="text-sm">›</span>}
