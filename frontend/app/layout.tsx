@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
+import config from "../store.config.json";
 
 export const metadata: Metadata = {
-  title: "Printable — Print shop",
-  description: "Upload, configure, and track your print orders online easily.",
+  title: `${config.storeName} — Print shop`,
+  description: config.storeTagline,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

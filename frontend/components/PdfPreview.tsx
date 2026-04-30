@@ -195,15 +195,16 @@ export default function PdfPreview({
       {!loading && !loadError && (
         <div
           className="flex items-center justify-center p-4 transition-all duration-300 relative"
-          style={{ minHeight: 380, filter: colour ? "none" : "grayscale(100%)" }}
+          style={{ minHeight: 380 }}
         >
           <canvas
             ref={mainCanvasRef}
-            className="max-w-full rounded-lg"
+            className="max-w-full rounded-lg transition-all duration-300"
             style={{
               transform: isLandscape ? "rotate(-90deg) scale(0.75)" : "none",
               transformOrigin: "center center",
               boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
+              filter: colour ? "none" : "grayscale(100%)"
             }}
           />
           {rendering && (
@@ -251,9 +252,13 @@ export default function PdfPreview({
                   ? "border-[#0C831F] shadow-md"
                   : "border-[#E8E8E8] opacity-60 hover:opacity-100"
               }`}
-              style={{ filter: colour ? "none" : "grayscale(100%)" }}
             >
-              <img src={src} alt={`Page ${i + 1}`} className="h-14 w-auto" />
+              <img 
+                src={src} 
+                alt={`Page ${i + 1}`} 
+                className="h-14 w-auto transition-all duration-300" 
+                style={{ filter: colour ? "none" : "grayscale(100%)" }}
+              />
               <div className={`text-[9px] text-center py-0.5 font-semibold ${
                 currentPage === i + 1 ? "text-[#0C831F] bg-[#E8F5E9]" : "text-[#999] bg-white"
               }`}>

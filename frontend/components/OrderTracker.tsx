@@ -4,6 +4,7 @@
 "use client";
 
 import type { Order, OrderStatus } from "@/lib/types";
+import storeConfig from "../store.config.json";
 
 const STEPS: { status: OrderStatus; label: string; desc: string }[] = [
   { status: "pending_payment", label: "Order placed", desc: "Waiting for payment confirmation" },
@@ -48,7 +49,7 @@ export default function OrderTracker({ order }: Props) {
           </div>
           <div>
             <p className="text-[#999] mb-0.5 font-semibold uppercase tracking-wider">Total Amount</p>
-            <p className="font-bold text-[#0C831F]">₹{order.totalAmount}</p>
+            <p className="font-bold text-[#0C831F]">{storeConfig.currencySymbol}{order.totalAmount}</p>
           </div>
           <div>
             <p className="text-[#999] mb-0.5 font-semibold uppercase tracking-wider">Total Copies</p>

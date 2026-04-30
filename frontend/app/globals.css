@@ -97,10 +97,42 @@ body {
   50%      { box-shadow: 0 0 12px 4px rgba(12, 131, 31, 0.15); }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
+
 .animate-fadeUp   { animation: fadeUp 0.35s ease-out both; }
 .animate-fadeIn   { animation: fadeIn 0.3s ease-out both; }
 .animate-slideDown { animation: slideDown 0.3s ease-out both; }
 .animate-scaleIn  { animation: scaleIn 0.25s ease-out both; }
+
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-floatLogo {
+  animation: floatLogo 3s ease-in-out infinite;
+}
+
+@keyframes rocketReveal {
+  0%   { clip-path: inset(100% 0 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+.animate-rocketReveal { 
+  animation: rocketReveal 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+}
+
+@keyframes textReveal {
+  0%, 80% { opacity: 0; transform: translateY(10px); }
+  100%    { opacity: 1; transform: translateY(0); }
+}
+.animate-textReveal { 
+  animation: textReveal 2.5s ease-out forwards; 
+}
+
 
 .shimmer {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);

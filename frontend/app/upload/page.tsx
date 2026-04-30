@@ -10,6 +10,8 @@ import { uploadToR2WithProgress } from "@/lib/upload";
 import { api } from "@/lib/api";
 import { calculatePrice, countPagesInRange } from "@/lib/price";
 import type { PrintConfig } from "@/lib/types";
+import storeConfig from "../../store.config.json";
+import PriceCalc from "@/components/PriceCalc";
 
 const PdfPreview = dynamic(() => import("@/components/PdfPreview"), {
   ssr: false,
@@ -337,7 +339,7 @@ export default function UploadPage() {
                   {readyEntries.length > 1 ? `File ${readyEntries.findIndex(e => e.id === activeEntry.id) + 1}` : "File 1"} ({activeConfig.totalPages} pages)
                 </p>
               </div>
-              <div className="flex items-center gap-3 bg-[#0C831F] text-white rounded-xl px-2 py-1 shadow-md shadow-[#0C831F]/20">
+              <div className="flex items-center gap-3 bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] text-white rounded-xl px-2 py-1 shadow-md shadow-[#0C831F]/20">
                 <button
                   onClick={() => updateConfig(activeEntry.id, { copies: Math.max(1, activeConfig.copies - 1) })}
                   className="w-7 h-7 flex items-center justify-center text-lg font-bold"
@@ -372,8 +374,8 @@ export default function UploadPage() {
               <PrintOptionCard
                 title="Choose print color"
                 options={[
-                  { value: "colour", label: "Coloured", sublabel: "₹6/page", icon: "🎨" },
-                  { value: "bw", label: "B & W", sublabel: "₹1/page", icon: "🖤" },
+                  { value: "colour", label: "Coloured", sublabel: `${storeConfig.currencySymbol}${storeConfig.pricing.colorPerPage}/page`, icon: "🎨" },
+                  { value: "bw", label: "B & W", sublabel: `${storeConfig.currencySymbol}${storeConfig.pricing.bwPerPage}/page`, icon: "🖤" },
                 ]}
                 value={activeConfig.colour ? "colour" : "bw"}
                 onChange={(v) => updateConfig(activeEntry.id, { colour: v === "colour" })}
@@ -383,7 +385,7 @@ export default function UploadPage() {
                 title="Choose print sides"
                 options={[
                   { value: "single", label: "Single side", icon: "📃" },
-                  { value: "double", label: "Both sides", sublabel: "10% off", icon: "📄" },
+                  { value: "double", label: "Both sides", sublabel: `${storeConfig.pricing.duplexDiscountPercent}% off`, icon: "📄" },
                 ]}
                 value={activeConfig.duplex ? "double" : "single"}
                 onChange={(v) => updateConfig(activeEntry.id, { duplex: v === "double" })}
@@ -398,6 +400,10 @@ export default function UploadPage() {
                 value={activeConfig.orientation}
                 onChange={(v) => updateConfig(activeEntry.id, { orientation: v as "portrait" | "landscape" })}
               />
+
+              <div className="md:col-span-2 mt-4">
+                <PriceCalc config={activeConfig} />
+              </div>
             </div>
 
           </div>
@@ -411,7 +417,7 @@ export default function UploadPage() {
             {/* Price Side */}
             <div className="w-1/3 p-4 flex flex-col justify-center">
               <span className="text-xs text-[#666] font-semibold">Total {activePriceSplit.pageCount * activeConfig.copies} pages</span>
-              <p className="text-lg font-black text-[#1A1A1A]">₹{grandTotal}</p>
+              <p className="text-lg font-black text-[#1A1A1A]">{storeConfig.currencySymbol}{grandTotal}</p>
             </div>
             
             {/* Action Side */}

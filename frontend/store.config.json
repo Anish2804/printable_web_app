@@ -1,0 +1,15 @@
+{
+  "storeName": "Printable",
+  "storeTagline": "Upload your file. Pick your options. We print it. Simple.",
+  "logoPath": "/logo.jpg",
+  "currencySymbol": "₹",
+  "pricing": {
+    "bwPerPage": 1,
+    "colorPerPage": 6,
+    "duplexDiscountPercent": 10
+  },
+  "contact": {
+    "email": "support@printable.com",
+    "phone": "+91 9876543210"
+  }
+}

@@ -3,10 +3,11 @@
 // Backend recalculates independently; this is for live UI display only.
 
 import type { PrintConfig } from "@/lib/types";
+import config from "../store.config.json";
 
 // Pricing constants — keep in sync with backend order.service.ts
-const BW_PER_PAGE = 1;    // ₹1 per B&W page
-const COLOR_PER_PAGE = 6; // ₹6 per colour page
+const BW_PER_PAGE = config.pricing.bwPerPage;    // ₹1 per B&W page
+const COLOR_PER_PAGE = config.pricing.colorPerPage; // ₹6 per colour page
 
 interface PriceLine {
   label: string;
@@ -59,11 +60,11 @@ export function calculatePrice(config: PrintConfig): PriceResult {
     },
   ];
 
-  // Duplex discount: 10% off if double-sided (saves paper)
+  // Duplex discount
   let total = subtotal;
   if (config.duplex && pageCount > 1) {
-    const discount = Math.round(subtotal * 0.1);
-    breakdown.push({ label: "Duplex discount (−10%)", amount: -discount });
+    const discount = Math.round(subtotal * (config.pricing.duplexDiscountPercent / 100));
+    breakdown.push({ label: `Duplex discount (−${config.pricing.duplexDiscountPercent}%)`, amount: -discount });
     total -= discount;
   }
 

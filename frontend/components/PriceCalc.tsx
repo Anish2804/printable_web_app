@@ -2,6 +2,7 @@
 
 import type { PrintConfig } from "@/lib/types";
 import { calculatePrice } from "@/lib/price";
+import storeConfig from "../store.config.json";
 
 export default function PriceCalc({ config }: { config: PrintConfig }) {
   const { perPageCost, pageCount, total, breakdown } = calculatePrice(config);
@@ -21,7 +22,7 @@ export default function PriceCalc({ config }: { config: PrintConfig }) {
           <div key={line.label} className="flex justify-between text-sm">
             <span className="text-[#666]">{line.label}</span>
             <span className="font-semibold text-[#1A1A1A]">
-              {line.amount < 0 ? "−" : ""}₹{Math.abs(line.amount).toFixed(0)}
+              {line.amount < 0 ? "−" : ""}{storeConfig.currencySymbol}{Math.abs(line.amount).toFixed(0)}
             </span>
           </div>
         ))}
@@ -29,10 +30,10 @@ export default function PriceCalc({ config }: { config: PrintConfig }) {
         <div className="border-t border-[#F2F3F7] pt-2 mt-2 flex justify-between items-center">
           <div>
             <span className="text-xs text-[#999]">
-              ₹{perPageCost}/pg × {pageCount} pg × {config.copies} copies
+              {storeConfig.currencySymbol}{perPageCost}/pg × {pageCount} pg × {config.copies} copies
             </span>
           </div>
-          <span className="text-[#0C831F] text-xl font-black">₹{total}</span>
+          <span className="text-[#0C831F] text-xl font-black">{storeConfig.currencySymbol}{total}</span>
         </div>
       </div>
     </div>

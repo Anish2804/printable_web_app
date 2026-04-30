@@ -6,11 +6,12 @@ import { nanoid } from "nanoid";
 // Initialize S3 Client for Cloudflare R2
 const s3 = new S3Client({
   region: "auto",
-  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  endpoint: `https://${process.env.R2_ACCOUNT_ID || "dummy"}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "dummy_access_key",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "dummy_secret_key",
   },
+  forcePathStyle: true,
 });
 
 const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'printable-files';
@@ -55,6 +56,11 @@ export async function deleteFromR2(key: string) {
  * This script provides more granular control if needed.
  */
 export async function cleanupR2Files() {
+  if (!process.env.R2_ACCOUNT_ID) {
+    console.log("[R2] Missing credentials. Skipping cleanup.");
+    return;
+  }
+  
   try {
     const listCommand = new ListObjectsV2Command({
       Bucket: BUCKET_NAME,

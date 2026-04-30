@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
+import config from "../store.config.json";
 
 export default function HomePage() {
   const router = useRouter();
@@ -15,50 +16,48 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F2F3F7] flex flex-col items-center justify-center px-5 py-16">
+    <main className="min-h-screen bg-[#F2F3F7] flex flex-col items-center justify-center px-5 py-6">
       {/* Theme toggle - top right */}
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
       {/* Header */}
-      <div className="mb-10 text-center">
+      <div className="mb-6 text-center">
         {/* Shop open badge */}
-        <div className="inline-flex items-center gap-2 bg-[#E8F5E9] border border-[#C8E6C9] rounded-full px-4 py-1.5 text-xs text-[#0C831F] font-semibold mb-6 tracking-wide">
+        <div className="inline-flex items-center gap-2 bg-[#E8F5E9] border border-[#C8E6C9] rounded-full px-4 py-1.5 text-[10px] text-[#0C831F] font-semibold mb-4 tracking-wide">
           <span className="w-2 h-2 rounded-full bg-[#0C831F] animate-pulse inline-block" />
           Shop is open
         </div>
-        <h1 className="text-5xl font-black tracking-tight mb-3 text-[#1A1A1A] flex flex-col items-center gap-4">
-          <img src="/logo.jpg" alt="Printable Logo" className="w-24 h-24 rounded-2xl shadow-md object-cover bg-white" />
+        <h1 className="text-4xl font-black tracking-tight mb-2 text-[#1A1A1A] flex flex-col items-center gap-3">
+          <img src={config.logoPath} alt={`${config.storeName} Logo`} className="w-16 h-16 rounded-2xl shadow-md object-cover bg-black" />
           <span>Print<span className="text-[#0C831F]">able</span></span>
         </h1>
-        <p className="text-[#666] text-sm max-w-xs mx-auto leading-relaxed">
-          Upload your file. Pick your options. We print it. Simple.
+        <p className="text-[#666] text-xs max-w-[260px] mx-auto leading-relaxed">
+          {config.storeTagline}
         </p>
       </div>
 
       {/* QR card */}
-      <div className="card p-8 mb-6 text-center w-full max-w-xs">
-        <div className="w-48 h-48 bg-[#F2F3F7] border border-[#E8E8E8] rounded-xl mx-auto mb-4 flex items-center justify-center">
-          <div className="grid grid-cols-3 gap-1.5 opacity-25">
-            {[1,0,1,0,1,0,1,0,1].map((v, i) => (
-              <div key={i} className="w-10 h-10 bg-[#1A1A1A] rounded-sm" style={{ opacity: v }} />
-            ))}
-          </div>
-        </div>
-        <p className="text-[#333] text-xs font-semibold">Scan to open on your phone</p>
+      <div className="card !bg-black p-0 mb-5 text-center w-full max-w-[260px] relative overflow-hidden border border-[#333] aspect-square">
+        {/* Logo revealing from bottom to top */}
+        <img 
+          src={config.logoPath} 
+          alt={`${config.storeName} Logo`} 
+          className="absolute inset-0 w-full h-full object-cover animate-rocketReveal opacity-90" 
+        />
       </div>
 
       {/* CTA */}
       <Link
         href="/upload"
-        className="btn-green w-full max-w-xs flex items-center justify-center py-4 text-sm font-bold tracking-wide uppercase rounded-xl mb-5 shadow-lg shadow-[#0C831F]/20"
+        className="btn-green w-full max-w-[260px] flex items-center justify-center py-3 text-sm font-bold tracking-wide uppercase rounded-xl mb-4 shadow-lg shadow-[#0C831F]/20"
       >
         Start New Print Order →
       </Link>
 
       {/* Track */}
-      <p className="text-[#333] text-xs mb-3 font-semibold">Track existing order? Enter order ID below</p>
-      <div className="flex gap-2 w-full max-w-xs">
+      <p className="text-[#333] text-[11px] mb-2 font-semibold">Track existing order? Enter order ID below</p>
+      <div className="flex gap-2 w-full max-w-[260px]">
         <input
           type="text"
           placeholder="Order ID e.g. ABC123"
@@ -75,6 +74,11 @@ export default function HomePage() {
         >
           Go
         </button>
+      </div>
+
+      {/* Footer / Contact */}
+      <div className="mt-10 text-center text-[#999] text-[10px]">
+        <p>Need help? Call us at <a href={`tel:${config.contact.phone}`} className="font-semibold text-[#0C831F]">{config.contact.phone}</a></p>
       </div>
     </main>
   );

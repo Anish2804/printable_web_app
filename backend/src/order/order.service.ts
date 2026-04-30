@@ -6,10 +6,15 @@ import { nanoid } from "nanoid";
 import Razorpay from "razorpay";
 import { Order, IOrder, IOrderFile, OrderStatus } from "./order.model";
 import { deleteFromR2 } from "../file/r2.service";
+import fs from "fs";
+import path from "path";
 
-// Pricing constants — keep in sync with frontend price.ts
-const BW_PER_PAGE    = 1;   // ₹1 per B&W page
-const COLOR_PER_PAGE = 6;   // ₹6 per colour page
+const configPath = path.resolve(__dirname, "../../../frontend/store.config.json");
+const storeConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+
+// Pricing constants
+const BW_PER_PAGE    = storeConfig.pricing.bwPerPage;   // B&W page cost
+const COLOR_PER_PAGE = storeConfig.pricing.colorPerPage;   // Colour page cost
 
 function calcFileAmount(
   pages:  number,
@@ -19,8 +24,8 @@ function calcFileAmount(
 ): number {
   const perPage = colour ? COLOR_PER_PAGE : BW_PER_PAGE;
   let total = perPage * pages * copies;
-  // 10% duplex discount
-  if (duplex && pages > 1) total = total - Math.round(total * 0.1);
+  // Duplex discount
+  if (duplex && pages > 1) total = total - Math.round(total * (storeConfig.pricing.duplexDiscountPercent / 100));
   return total;
 }
 

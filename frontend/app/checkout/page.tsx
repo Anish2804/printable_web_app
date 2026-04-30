@@ -11,6 +11,7 @@ import PriceCalc from "@/components/PriceCalc";
 import { api } from "@/lib/api";
 import { calculatePrice, countPagesInRange } from "@/lib/price";
 import type { PrintConfig, PaymentMode } from "@/lib/types";
+import storeConfig from "../../store.config.json";
 
 declare global {
   interface Window {
@@ -96,7 +97,7 @@ export default function CheckoutPage() {
           amount: amount,
           currency: "INR",
           order_id: razorpayOrderId,
-          name: "SmartPrint",
+          name: storeConfig.storeName,
           description:
             jobs.length === 1
               ? `Print order — ${jobs[0].fileName}`
@@ -128,7 +129,7 @@ export default function CheckoutPage() {
             ← Back
           </a>
           <h1 className="text-sm font-bold">
-            <span className="flex items-center gap-2"><img src="/logo.jpg" alt="Printable logo" className="w-5 h-5 rounded-md object-cover bg-white" /><span>Print<span className="text-[#0C831F]">able</span></span></span>
+            <span className="flex items-center gap-2"><img src={storeConfig.logoPath} alt={`${storeConfig.storeName} logo`} className="w-5 h-5 rounded-md object-cover bg-black" /><span>Print<span className="text-[#0C831F]">able</span></span></span>
           </h1>
           <div className="w-10" />
         </div>
@@ -149,11 +150,22 @@ export default function CheckoutPage() {
             type="text"
             placeholder="Enter your name (e.g. Anish)"
             value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="w-full bg-[#F2F3F7] border border-[#E8E8E8] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-[#CCC] outline-none focus:border-[#0C831F] transition-colors"
+            onChange={(e) => {
+              setUserName(e.target.value);
+              if (error.toLowerCase().includes("name")) setError("");
+            }}
+            className={`w-full bg-[#F2F3F7] border rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-[#CCC] outline-none transition-colors ${
+              error.toLowerCase().includes("name") 
+                ? "border-red-500 ring-1 ring-red-500/20" 
+                : "border-[#E8E8E8] focus:border-[#0C831F]"
+            }`}
             maxLength={50}
           />
-          <p className="text-[10px] text-[#999] mt-1.5">This name will appear on your order</p>
+          {error.toLowerCase().includes("name") ? (
+            <p className="text-[10px] text-red-500 mt-1.5 font-bold animate-shake">⚠️ {error}</p>
+          ) : (
+            <p className="text-[10px] text-[#999] mt-1.5">This name will appear on your order</p>
+          )}
         </div>
 
         {/* File(s) summary */}
@@ -190,7 +202,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <span className="text-[#0C831F] font-bold text-sm shrink-0">
-                    ₹{calcPrice(job.config)}
+                    {storeConfig.currencySymbol}{calcPrice(job.config)}
                   </span>
                 </div>
               </div>
@@ -204,7 +216,7 @@ export default function CheckoutPage() {
         {/* Price breakdown for single file */}
         {jobs.length === 1 && <PriceCalc config={jobs[0].config} />}
 
-        {error && <p className="text-red-400 text-xs mt-3">{error}</p>}
+        {error && !error.toLowerCase().includes("name") && <p className="text-red-400 text-xs mt-3">{error}</p>}
       </div>
 
       {/* Sticky bottom CTA */}
@@ -213,7 +225,7 @@ export default function CheckoutPage() {
           <div className="flex items-center justify-between">
             <div>
               <span className="text-[#999] text-[10px] uppercase tracking-widest">Total</span>
-              <p className="text-[#1A1A1A] text-lg font-black">₹{totalAmount}</p>
+              <p className="text-[#1A1A1A] text-lg font-black">{storeConfig.currencySymbol}{totalAmount}</p>
             </div>
             <button
               onClick={handlePlaceOrder}
