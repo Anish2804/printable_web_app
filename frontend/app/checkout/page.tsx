@@ -184,20 +184,29 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{job.fileName}</p>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
+                      <span className="text-[10px] bg-[#E8E8E8] dark:bg-[#333] text-black dark:text-white px-2 py-0.5 rounded-md font-medium">
                         {pc} page{pc > 1 ? "s" : ""}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
+                      <span className="text-[10px] bg-[#E8E8E8] dark:bg-[#333] text-black dark:text-white px-2 py-0.5 rounded-md font-medium">
                         {job.config.copies} cop{job.config.copies > 1 ? "ies" : "y"}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
+                      <span className="text-[10px] bg-[#E8E8E8] dark:bg-[#333] text-black dark:text-white px-2 py-0.5 rounded-md font-medium">
                         {job.config.colour ? "🎨 Colour" : "🖤 B&W"}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
-                        {job.config.duplex ? "📄 Both sides" : "📃 Single"}
+                      <span className="text-[10px] bg-[#E8E8E8] dark:bg-[#333] text-black dark:text-white px-2 py-0.5 rounded-md font-medium">
+                        {job.config.duplex ? "📄 Both" : "📃 Single"}
                       </span>
-                      <span className="text-[10px] bg-[#E8E8E8] text-black px-2 py-0.5 rounded-md font-medium">
-                        {job.config.orientation === "landscape" ? "▭ Landscape" : "▯ Portrait"}
+                      <span className="text-[10px] bg-[#E8E8E8] dark:bg-[#333] text-black dark:text-white px-2 py-0.5 rounded-md font-medium flex items-center gap-1">
+                        {job.config.orientation === "landscape" ? (
+                          <svg width="12" height="10" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                            <rect x="1" y="1" width="24" height="18" rx="3" fill="#0C831F" stroke="#0C831F" strokeWidth="2"/>
+                          </svg>
+                        ) : (
+                          <svg width="10" height="12" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                            <rect x="1" y="1" width="18" height="24" rx="3" fill="#0C831F" stroke="#0C831F" strokeWidth="2"/>
+                          </svg>
+                        )}
+                        {job.config.orientation === "landscape" ? "Landscape" : "Portrait"}
                       </span>
                     </div>
                   </div>

@@ -39,6 +39,12 @@ let persistedEntries: FileEntry[] = [];
 let persistedConfigs: Record<string, PrintConfig> = {};
 let persistedActiveId: string | null = null;
 
+export function clearUploadState() {
+  persistedEntries = [];
+  persistedConfigs = {};
+  persistedActiveId = null;
+}
+
 export default function UploadPage() {
   const router = useRouter();
   const [entries, setEntries] = useState<FileEntry[]>(persistedEntries);
@@ -437,8 +443,28 @@ export default function UploadPage() {
               <PrintOptionCard
                 title="Choose print orientation"
                 options={[
-                  { value: "portrait", label: "Portrait", sublabel: "8.3 x 11.7 in", icon: "▯" },
-                  { value: "landscape", label: "Landscape", sublabel: "11.7 x 8.3 in", icon: "▭" },
+                  { 
+                    value: "portrait", 
+                    label: "Portrait", 
+                    sublabel: "8.3 x 11.7 in", 
+                    icon: (
+                      <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+                        <rect x="1" y="1" width="18" height="24" rx="3" fill="#E8F5E9" stroke="#0C831F" strokeWidth="2"/>
+                        <path d="M5 7H15M5 12H15M5 17H10" stroke="#0C831F" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    )
+                  },
+                  { 
+                    value: "landscape", 
+                    label: "Landscape", 
+                    sublabel: "11.7 x 8.3 in", 
+                    icon: (
+                      <svg width="26" height="20" viewBox="0 0 26 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
+                        <rect x="1" y="1" width="24" height="18" rx="3" fill="#E8F5E9" stroke="#0C831F" strokeWidth="2"/>
+                        <path d="M7 5V15M12 5V15M17 5V10" stroke="#0C831F" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    )
+                  },
                 ]}
                 value={activeConfig.orientation}
                 onChange={(v) => updateConfig(activeEntry.id, { orientation: v as "portrait" | "landscape" })}

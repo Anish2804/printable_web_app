@@ -4,7 +4,7 @@
 interface Option<T extends string> {
   value: T;
   label: string;
-  icon?: string;
+  icon?: React.ReactNode;
   sublabel?: string;
 }
 
@@ -28,7 +28,7 @@ export default function PrintOptionCard<T extends string>({ title, options, valu
               onClick={() => onChange(opt.value)}
               className={`flex-1 py-3 px-3 rounded-xl text-center transition-all duration-150 border-2 ${
                 active
-                  ? "border-[#0C831F] bg-[#E8F5E9]"
+                  ? "border-[#0C831F] bg-[#E8F5E9] dark:bg-[#0C831F]/20"
                   : "border-[#E8E8E8] bg-white hover:border-[#0C831F]/40"
               }`}
             >
@@ -37,7 +37,7 @@ export default function PrintOptionCard<T extends string>({ title, options, valu
                 {opt.label}
               </span>
               {opt.sublabel && (
-                <span className={`text-xs block mt-0.5 ${active ? "text-[#0C831F]/70" : "text-[#999]"}`}>
+                <span className={`text-xs block mt-0.5 ${active ? "text-[#0C831F]/70" : "text-[#999] dark:text-[#999]"}`}>
                   {opt.sublabel}
                 </span>
               )}

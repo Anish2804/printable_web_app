@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import OrderTracker from "@/components/OrderTracker";
 import { usePolling } from "@/lib/usePolling";
 import type { Order } from "@/lib/types";
+import { clearUploadState } from "../../upload/page";
 
 export default function TrackPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +22,13 @@ export default function TrackPage() {
 
   return (
     <main className="min-h-screen bg-[#F2F3F7] text-[#1A1A1A] px-5 py-10  max-w-lg mx-auto">
-      <button onClick={() => router.push("/")} className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#E8E8E8] hover:bg-[#F8FDF8] transition-colors shadow-sm mb-8">
+      <button 
+        onClick={() => {
+          clearUploadState();
+          router.push("/");
+        }} 
+        className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#E8E8E8] hover:bg-[#F8FDF8] transition-colors shadow-sm mb-8"
+      >
         <span className="text-lg text-[#1A1A1A]">‹</span>
       </button>
 

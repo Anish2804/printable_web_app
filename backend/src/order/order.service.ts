@@ -9,7 +9,7 @@ import { deleteFromR2 } from "../file/r2.service";
 import fs from "fs";
 import path from "path";
 
-const configPath = path.resolve(__dirname, "../../../frontend/store.config.json");
+const configPath = path.resolve(process.cwd(), "store.config.json");
 const storeConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
 // Pricing constants
