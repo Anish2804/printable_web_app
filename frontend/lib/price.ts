@@ -3,11 +3,11 @@
 // Backend recalculates independently; this is for live UI display only.
 
 import type { PrintConfig } from "@/lib/types";
-import config from "../store.config.json";
+import storeConfig from "../store.config.json";
 
 // Pricing constants — keep in sync with backend order.service.ts
-const BW_PER_PAGE = config.pricing.bwPerPage;    // ₹1 per B&W page
-const COLOR_PER_PAGE = config.pricing.colorPerPage; // ₹6 per colour page
+const BW_PER_PAGE = storeConfig.pricing.bwPerPage;    // ₹1 per B&W page
+const COLOR_PER_PAGE = storeConfig.pricing.colorPerPage; // ₹6 per colour page
 
 interface PriceLine {
   label: string;
@@ -55,7 +55,7 @@ export function calculatePrice(config: PrintConfig): PriceResult {
 
   const breakdown: PriceLine[] = [
     {
-      label: `${pageCount} page${pageCount > 1 ? "s" : ""} × ${config.copies} cop${config.copies > 1 ? "ies" : "y"} × ₹${perPageCost}`,
+      label: `${pageCount} page${pageCount > 1 ? "s" : ""} × ${config.copies} cop${config.copies > 1 ? "ies" : "y"} × ${storeConfig.currencySymbol}${perPageCost}`,
       amount: subtotal,
     },
   ];
@@ -63,8 +63,8 @@ export function calculatePrice(config: PrintConfig): PriceResult {
   // Duplex discount
   let total = subtotal;
   if (config.duplex && pageCount > 1) {
-    const discount = Math.round(subtotal * (config.pricing.duplexDiscountPercent / 100));
-    breakdown.push({ label: `Duplex discount (−${config.pricing.duplexDiscountPercent}%)`, amount: -discount });
+    const discount = Math.round(subtotal * (storeConfig.pricing.duplexDiscountPercent / 100));
+    breakdown.push({ label: `Duplex discount (−${storeConfig.pricing.duplexDiscountPercent}%)`, amount: -discount });
     total -= discount;
   }
 
