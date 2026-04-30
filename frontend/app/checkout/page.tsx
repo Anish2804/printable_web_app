@@ -230,7 +230,7 @@ export default function CheckoutPage() {
             <button
               onClick={handlePlaceOrder}
               disabled={loading}
-              className="bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] hover:opacity-90 disabled:opacity-50 text-white font-bold text-sm py-3.5 px-8 rounded-xl transition-all duration-200 tracking-wide uppercase shadow-lg shadow-[#0C831F]/20 active:scale-95"
+              className="bg-[#0C831F] hover:opacity-90 disabled:opacity-50 text-white font-bold text-sm py-3.5 px-8 rounded-xl transition-all duration-200 tracking-wide uppercase shadow-lg shadow-[#0C831F]/20 active:scale-95"
             >
               {loading
                 ? "Processing…"

@@ -207,9 +207,12 @@ export default function UploadPage() {
 
   const isPdf = activeEntry?.file?.type === "application/pdf";
   const isImage = activeEntry?.file?.type?.startsWith("image/");
-  const isDocx = activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  const isDocx = activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || activeEntry?.file?.name.endsWith(".docx");
   const isPpt = activeEntry?.file?.type === "application/vnd.ms-powerpoint" || 
-                activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                activeEntry?.file?.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+                activeEntry?.file?.name.endsWith(".ppt") ||
+                activeEntry?.file?.name.endsWith(".pptx");
+  const isDocument = isPdf || isDocx || isPpt;
   const showConfig = readyEntries.length > 0 && activeEntry;
 
   return (
@@ -283,7 +286,7 @@ export default function UploadPage() {
                     onClick={() => { setActiveFileId(e.id); setCurrentPage(1); }}
                     className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all border ${
                       activeFileId === e.id
-                        ? "bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] text-white border-transparent shadow-md shadow-[#0C831F]/20"
+                        ? "bg-[#0C831F] text-white border-transparent shadow-md shadow-[#0C831F]/20"
                         : "bg-white text-[#666] border-[#E8E8E8]"
                     }`}
                   >
@@ -330,25 +333,39 @@ export default function UploadPage() {
                   </div>
                 </div>
               ) : activeEntry?.file ? (
-                /* DOCX / other file preview placeholder */
-                <div className="relative bg-white rounded-2xl shadow-sm border border-[#E8E8E8] p-6 text-center">
+                /* DOCX / PPT / other file premium placeholder */
+                <div className="relative bg-white rounded-2xl shadow-sm border border-[#E8E8E8] p-8 text-center overflow-hidden">
+                  <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${isDocx ? "from-[#E3F2FD] to-[#BBDEFB]" : isPpt ? "from-[#FFF3E0] to-[#FFE0B2]" : "from-[#F2F3F7] to-[#E8E8E8]"} animate-shimmer`} />
+                  
                   <button
                     onClick={() => handleRemoveFile(activeEntry.id)}
-                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#F2F3F7] flex items-center justify-center text-xl text-[#999] hover:bg-[#E8E8E8] z-10"
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#F2F3F7] flex items-center justify-center text-xl text-[#999] hover:bg-red-50 hover:text-red-500 transition-all z-10"
                   >
                     ×
                   </button>
-                  <div className="flex flex-col items-center justify-center min-h-[260px] gap-3">
-                    <div className={`w-20 h-24 bg-gradient-to-br ${isDocx ? "from-[#4285F4] to-[#1967D2]" : isPpt ? "from-[#FF5722] to-[#D84315]" : "from-[#666] to-[#444]"} rounded-lg flex flex-col items-center justify-center shadow-lg`}>
-                      <span className="text-white text-2xl mb-1">{isPpt ? "📊" : "📄"}</span>
-                      <span className="text-white text-[10px] font-bold uppercase tracking-wider">
-                        {isDocx ? "DOCX" : isPpt ? "PPT" : activeEntry.file.name.split(".").pop()?.toUpperCase() || "FILE"}
-                      </span>
+
+                  <div className="flex flex-col items-center justify-center min-h-[280px] gap-6">
+                    {/* Visual Document Icon */}
+                    <div className="relative group">
+                      <div className={`w-24 h-32 bg-gradient-to-br ${isDocx ? "from-[#4285F4] to-[#1967D2]" : isPpt ? "from-[#FF5722] to-[#D84315]" : "from-[#666] to-[#444]"} rounded-xl flex flex-col items-center justify-center shadow-2xl transform group-hover:scale-105 transition-transform duration-500`}>
+                        <span className="text-white text-4xl mb-2 drop-shadow-md">{isPpt ? "📊" : "📄"}</span>
+                        <div className="absolute bottom-4 left-0 w-full bg-black/10 py-1 backdrop-blur-sm">
+                          <span className="text-white text-[12px] font-black uppercase tracking-[0.2em]">
+                            {isDocx ? "DOCX" : isPpt ? "PPT" : activeEntry.file.name.split(".").pop()?.toUpperCase() || "FILE"}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Decorative elements */}
+                      <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-white rounded-full border-4 border-[#F2F3F7] flex items-center justify-center shadow-md animate-bounce">
+                        <span className="text-[10px]">✨</span>
+                      </div>
                     </div>
-                    <p className="text-sm font-semibold text-[#1A1A1A] truncate max-w-[280px]">{activeEntry.file.name}</p>
-                    <p className="text-xs text-[#999]">{(activeEntry.file.size / 1024 / 1024).toFixed(2)} MB</p>
-                    <div className="flex items-center gap-2 bg-[#E8F5E9] text-[#0C831F] px-3 py-1.5 rounded-lg text-xs font-semibold">
-                      <span>✓</span> Ready for print
+
+                    {/* File Meta Info Dashboard */}
+                    <div className="w-full max-w-[320px] space-y-4">
+                      <div className="text-center">
+                        <h3 className="text-lg font-bold text-[#1A1A1A] truncate px-4">{activeEntry.file.name}</h3>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -365,7 +382,7 @@ export default function UploadPage() {
                   {readyEntries.length > 1 ? `File ${readyEntries.findIndex(e => e.id === activeEntry.id) + 1}` : "File 1"} ({activeConfig.totalPages} pages)
                 </p>
               </div>
-              <div className="flex items-center gap-3 bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] text-white rounded-xl px-2 py-1 shadow-md shadow-[#0C831F]/20">
+              <div className="flex items-center gap-3 bg-[#0C831F] text-white rounded-xl px-2 py-1 shadow-md shadow-[#0C831F]/20">
                 <button
                   onClick={() => updateConfig(activeEntry.id, { copies: Math.max(1, activeConfig.copies - 1) })}
                   className="w-7 h-7 flex items-center justify-center text-lg font-bold"
@@ -384,7 +401,7 @@ export default function UploadPage() {
 
             {/* Options block */}
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#E8E8E8] space-y-5">
-              {isPdf && activeConfig.totalPages > 1 && (
+              {isDocument && activeConfig.totalPages > 1 && (
                 <div className="pb-5 border-b border-[#F2F3F7]">
                   <PageRangeSelector
                     totalPages={activeConfig.totalPages}
@@ -451,7 +468,7 @@ export default function UploadPage() {
                <button
                 onClick={handleNext}
                 disabled={!canSubmit}
-                className="w-full bg-gradient-to-r from-[#00B4D8] via-[#10B981] to-[#0C831F] hover:opacity-90 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0C831F]/20"
+                className="w-full bg-[#0C831F] hover:opacity-90 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0C831F]/20"
               >
                 {submitting ? "Processing…" : "Add to cart"}
                 {!submitting && <span className="text-sm">›</span>}
