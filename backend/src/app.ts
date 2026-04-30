@@ -9,6 +9,7 @@ import { paymentRouter } from "./payment/payment.routes";
 
 import { connectDB } from "./db";
 import { cleanupR2Files } from "./file/r2.service";
+import cron from "node-cron";
 
 const app = express();
 
@@ -42,7 +43,7 @@ app.use("/orders", orderRouter);
 app.use("/", fileRouter);       // GET /upload-signature
 app.use("/payment", paymentRouter); // POST /payment/webhook
 
-// Cleanup route for Vercel Cron
+// Cleanup route for Vercel Cron (Optional if using node-cron)
 app.get("/cleanup-files", async (req, res) => {
   try {
     await cleanupR2Files();
@@ -50,6 +51,12 @@ app.get("/cleanup-files", async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: "Cleanup failed" });
   }
+});
+
+// Schedule automatic cleanup every 4 hours for long-running servers (Railway/Render)
+cron.schedule("0 */4 * * *", async () => {
+  console.log("[Cron] Starting automatic R2 cleanup...");
+  await cleanupR2Files();
 });
 
 export default app;
