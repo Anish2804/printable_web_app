@@ -1,4 +1,4 @@
-// FILE: apps/web/lib/price.ts
+// FILE: apps/web/lib/price.ts - Updated for deployment
 // Price calculation logic — single source of truth for frontend estimates.
 // Backend recalculates independently; this is for live UI display only.
 
