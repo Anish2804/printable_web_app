@@ -3,7 +3,8 @@
 
 import type { Order, PrintConfig, PaymentMode, OrderStatus } from "@/lib/types";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+let BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+if (BASE.endsWith("/")) BASE = BASE.slice(0, -1);
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`);
