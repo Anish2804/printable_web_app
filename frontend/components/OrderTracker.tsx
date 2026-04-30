@@ -84,10 +84,10 @@ export default function OrderTracker({ order }: Props) {
                 key={step.status}
                 className={`border rounded-xl p-4 flex items-center gap-4 transition-all duration-300 ${
                   active
-                    ? "border-[#0C831F] bg-[#F8FDF8] shadow-sm"
+                    ? "border-[#0C831F] bg-white shadow-sm"
                     : done
-                    ? "border-[#C8E6C9] bg-white opacity-70"
-                    : "border-[#E8E8E8] bg-white opacity-40"
+                    ? "border-[#C8E6C9] bg-white"
+                    : "border-[#E8E8E8] bg-white opacity-80"
                 }`}
               >
                 {/* Icon */}

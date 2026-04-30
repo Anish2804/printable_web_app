@@ -125,9 +125,9 @@ export default function CheckoutPage() {
       {/* Top bar */}
       <div className="sticky top-0 z-50 bg-[#F2F3F7]/90 backdrop-blur-xl border-b border-[#E8E8E8]">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <a href="/upload" className="text-[#999] text-xs flex items-center gap-1.5 hover:text-[#0C831F] transition-colors">
-            ← Back
-          </a>
+          <button onClick={() => router.back()} className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#E8E8E8] hover:bg-[#F8FDF8] transition-colors shadow-sm">
+            <span className="text-lg text-[#1A1A1A]">‹</span>
+          </button>
           <h1 className="text-sm font-bold">
             <span className="flex items-center gap-2"><img src={storeConfig.logoPath} alt={`${storeConfig.storeName} logo`} className="w-5 h-5 rounded-md object-cover bg-black" /><span>Print<span className="text-[#0C831F]">able</span></span></span>
           </h1>

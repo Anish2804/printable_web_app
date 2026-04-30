@@ -34,14 +34,26 @@ const DEFAULT_CONFIG: PrintConfig = {
   orientation: "portrait",
 };
 
+// Global state to persist files when navigating back from checkout
+let persistedEntries: FileEntry[] = [];
+let persistedConfigs: Record<string, PrintConfig> = {};
+let persistedActiveId: string | null = null;
+
 export default function UploadPage() {
   const router = useRouter();
-  const [entries, setEntries] = useState<FileEntry[]>([]);
-  const [configs, setConfigs] = useState<Record<string, PrintConfig>>({});
-  const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  const [entries, setEntries] = useState<FileEntry[]>(persistedEntries);
+  const [configs, setConfigs] = useState<Record<string, PrintConfig>>(persistedConfigs);
+  const [activeFileId, setActiveFileId] = useState<string | null>(persistedActiveId);
   const [currentPage, setCurrentPage] = useState(1);
   const [globalError, setGlobalError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Sync with global state
+  useEffect(() => {
+    persistedEntries = entries;
+    persistedConfigs = configs;
+    persistedActiveId = activeFileId;
+  }, [entries, configs, activeFileId]);
 
   // Track active XHR handles for cancel support
   const xhrRefs = useRef<Record<string, XMLHttpRequest>>({});
@@ -205,7 +217,21 @@ export default function UploadPage() {
       {/* Top Header */}
       <div className="sticky top-0 z-50 bg-[#F2F3F7] border-b border-[#E8E8E8]">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <button onClick={() => router.back()} className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#E8E8E8] hover:bg-[#F8FDF8] transition-colors shadow-sm">
+          <button 
+            onClick={() => {
+              if (readyEntries.length > 0) {
+                setEntries([]);
+                setConfigs({});
+                setActiveFileId(null);
+                persistedEntries = [];
+                persistedConfigs = {};
+                persistedActiveId = null;
+              } else {
+                router.push("/");
+              }
+            }} 
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#E8E8E8] hover:bg-[#F8FDF8] transition-colors shadow-sm"
+          >
             <span className="text-lg text-[#1A1A1A]">‹</span>
           </button>
           
