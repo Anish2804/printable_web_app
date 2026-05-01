@@ -4,12 +4,12 @@
   "logoPath": "/logo.jpg",
   "currencySymbol": "₹",
   "pricing": {
-    "bwPerPage": 5,
-    "colorPerPage": 10,
-    "duplexDiscountPercent": 10
+    "bwPerPage": 1,
+    "colorPerPage": 5,
+    "duplexDiscountPercent": 0
   },
   "contact": {
     "email": "support@printable.com",
-    "phone": "+91 9876543210"
+    "phone": "+91 9827004042"
   }
 }
