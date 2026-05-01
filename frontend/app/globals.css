@@ -109,6 +109,14 @@ body {
 .animate-slideDown { animation: slideDown 0.3s ease-out both; }
 .animate-scaleIn  { animation: scaleIn 0.25s ease-out both; }
 
+@keyframes pulseSubtle {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.01); opacity: 0.95; }
+}
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
+
 @keyframes floatLogo {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }

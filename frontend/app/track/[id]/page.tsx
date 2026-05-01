@@ -21,16 +21,27 @@ export default function TrackPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#F2F3F7] text-[#1A1A1A] px-5 py-10  max-w-lg mx-auto">
-      <button 
-        onClick={() => {
-          clearUploadState();
-          router.push("/");
-        }} 
-        className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-[#E8E8E8] hover:bg-[#F8FDF8] transition-colors shadow-sm mb-8"
-      >
-        <span className="text-lg text-[#1A1A1A]">‹</span>
-      </button>
+    <main className="min-h-screen bg-[#F2F3F7] text-[#1A1A1A] px-5 py-6 max-w-lg mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <button 
+          onClick={() => {
+            clearUploadState();
+            router.push("/");
+          }} 
+          className="bg-white border border-[#E8E8E8] text-[#1A1A1A] px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-[#F2F3F7] transition-all flex items-center gap-1.5 active:scale-95"
+        >
+          <span className="text-base">+</span> New Order
+        </button>
+
+        <button 
+          onClick={() => {
+            router.push("/upload");
+          }} 
+          className="bg-white border border-[#0C831F] text-[#0C831F] px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-[#E8F5E9] transition-all flex items-center gap-1.5 active:scale-95"
+        >
+          <span className="text-base">⚙️</span> New Order (Same File)
+        </button>
+      </div>
 
       <div className="mb-8">
         <p className="text-[#999] text-xs tracking-widest uppercase mb-1">Order</p>

@@ -281,6 +281,20 @@ export default function UploadPage() {
               onCancelUpload={handleCancelUpload}
               onRemoveFile={handleRemoveFile}
             />
+            
+            {/* Animated Info Card for Step 1 */}
+            <div className="mt-6 bg-[#E8F5E9] border border-[#C8E6C9] rounded-2xl p-4 flex items-start gap-3 animate-pulse-subtle">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                <span className="text-lg">💡</span>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-[#0C831F] uppercase tracking-wider mb-1">Pro Tip</p>
+                <p className="text-xs text-[#1B5E20] font-medium leading-relaxed">
+                  For faster printing, please choose one mode (B&W or Color) per order.
+                </p>
+              </div>
+            </div>
+
             {globalError && <p className="text-red-500 text-xs mt-2">{globalError}</p>}
           </div>
         )}
