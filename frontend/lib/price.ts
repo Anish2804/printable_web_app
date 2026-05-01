@@ -48,9 +48,15 @@ export function countPagesInRange(pageRange: string, totalPages: number): number
   return pages.size || 1;
 }
 
-export function calculatePrice(config: PrintConfig): PriceResult {
+export function calculatePrice(config: PrintConfig, orderTotalPages: number = 0): PriceResult {
   const pageCount = countPagesInRange(config.pageRange, config.totalPages);
-  const perPageCost = config.colour ? COLOR_PER_PAGE : BW_PER_PAGE;
+  
+  // Use bulk rates (0.90/4.00) if orderTotalPages > 100, otherwise use config rates
+  const isBulk = orderTotalPages > 100;
+  const perPageCost = config.colour 
+    ? (isBulk ? 4 : COLOR_PER_PAGE) 
+    : (isBulk ? 0.9 : BW_PER_PAGE);
+    
   const subtotal = perPageCost * pageCount * config.copies;
 
   const breakdown: PriceLine[] = [

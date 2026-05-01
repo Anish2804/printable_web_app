@@ -194,10 +194,15 @@ export default function UploadPage() {
     return () => URL.revokeObjectURL(url);
   }, [activeEntry?.id]);
 
-  const activePriceSplit = calculatePrice(activeConfig);
+  const totalPagesInOrder = readyEntries.reduce((sum, e) => {
+    const c = configs[e.id] ?? DEFAULT_CONFIG;
+    return sum + (c.pages * c.copies);
+  }, 0);
+
+  const activePriceSplit = calculatePrice(activeConfig, totalPagesInOrder);
   const grandTotal = readyEntries.reduce((sum, e) => {
     const c = configs[e.id] ?? DEFAULT_CONFIG;
-    return sum + calculatePrice(c).total;
+    return sum + calculatePrice(c, totalPagesInOrder).total;
   }, 0);
 
   const handleNext = () => {
@@ -471,7 +476,7 @@ export default function UploadPage() {
               />
 
               <div className="md:col-span-2 mt-4">
-                <PriceCalc config={activeConfig} />
+                <PriceCalc config={activeConfig} orderTotalPages={totalPagesInOrder} />
               </div>
             </div>
 

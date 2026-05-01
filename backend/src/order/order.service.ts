@@ -16,13 +16,20 @@ function calcFileAmount(
   pages:  number,
   copies: number,
   colour: boolean,
-  duplex: boolean
+  duplex: boolean,
+  isBulk: boolean
 ): number {
-  const perPage = colour ? COLOR_PER_PAGE : BW_PER_PAGE;
+  // Use bulk rates (0.90/4.00) if total pages in order > 100, otherwise use config rates (1/5)
+  const perPage = colour 
+    ? (isBulk ? 4 : COLOR_PER_PAGE) 
+    : (isBulk ? 0.9 : BW_PER_PAGE);
+    
   let total = perPage * pages * copies;
   // Duplex discount
-  if (duplex && pages > 1) total = total - Math.round(total * (storeConfig.pricing.duplexDiscountPercent / 100));
-  return total;
+  if (duplex && pages > 1) {
+    total = total - (total * (storeConfig.pricing.duplexDiscountPercent / 100));
+  }
+  return Math.round(total);
 }
 
 // Generate a short readable order ID e.g. "ABC123"
@@ -58,6 +65,10 @@ interface CreateOrderResult {
 export async function createOrder(
   input: CreateOrderInput
 ): Promise<CreateOrderResult> {
+  // Calculate total pages across all files to check for bulk discount
+  const totalPagesInOrder = input.files.reduce((sum, f) => sum + (f.pages * f.copies), 0);
+  const isBulk = totalPagesInOrder > 100;
+
   // Build per-file records with pre-calculated amounts
   const files: IOrderFile[] = input.files.map((f) => ({
     fileName:      f.fileName,
@@ -68,7 +79,7 @@ export async function createOrder(
     duplex:        f.duplex,
     orientation:   f.orientation || 'portrait',
     pageRange:     f.pageRange || 'all',
-    amount:        calcFileAmount(f.pages, f.copies, f.colour, f.duplex),
+    amount:        calcFileAmount(f.pages, f.copies, f.colour, f.duplex, isBulk),
   }));
 
   const totalAmount = files.reduce((s, f) => s + f.amount, 0);

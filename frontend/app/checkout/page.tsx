@@ -53,7 +53,8 @@ export default function CheckoutPage() {
     if (savedName) setUserName(savedName);
   }, [router]);
 
-  const totalAmount = jobs.reduce((s, j) => s + calcPrice(j.config), 0);
+  const totalPagesInOrder = jobs.reduce((s, j) => s + (countPagesInRange(j.config.pageRange, j.config.totalPages) * j.config.copies), 0);
+  const totalAmount = jobs.reduce((s, j) => s + calculatePrice(j.config, totalPagesInOrder).total, 0);
 
   const handlePlaceOrder = async () => {
     if (!jobs.length) return;
@@ -223,7 +224,7 @@ export default function CheckoutPage() {
         <PaymentToggle mode={paymentMode} onChange={setPaymentMode} />
 
         {/* Price breakdown for single file */}
-        {jobs.length === 1 && <PriceCalc config={jobs[0].config} />}
+        {jobs.length === 1 && <PriceCalc config={jobs[0].config} orderTotalPages={totalPagesInOrder} />}
 
         {error && !error.toLowerCase().includes("name") && <p className="text-red-400 text-xs mt-3">{error}</p>}
       </div>

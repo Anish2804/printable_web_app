@@ -4,8 +4,8 @@ import type { PrintConfig } from "@/lib/types";
 import { calculatePrice } from "@/lib/price";
 import storeConfig from "../store.config.json";
 
-export default function PriceCalc({ config }: { config: PrintConfig }) {
-  const { perPageCost, pageCount, total, breakdown } = calculatePrice(config);
+export default function PriceCalc({ config, orderTotalPages = 0 }: { config: PrintConfig, orderTotalPages?: number }) {
+  const { perPageCost, pageCount, total, breakdown } = calculatePrice(config, orderTotalPages);
 
   return (
     <div className="bg-white border border-[#E8E8E8] rounded-2xl p-4">
