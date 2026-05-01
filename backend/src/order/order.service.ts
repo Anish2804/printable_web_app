@@ -6,11 +6,7 @@ import { nanoid } from "nanoid";
 import Razorpay from "razorpay";
 import { Order, IOrder, IOrderFile, OrderStatus } from "./order.model";
 import { deleteFromR2 } from "../file/r2.service";
-import fs from "fs";
-import path from "path";
-
-const configPath = path.resolve(process.cwd(), "store.config.json");
-const storeConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+import storeConfig from "../../store.config.json";
 
 // Pricing constants
 const BW_PER_PAGE    = storeConfig.pricing.bwPerPage;   // B&W page cost

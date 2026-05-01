@@ -2,10 +2,8 @@
 // MongoDB Atlas connection using Mongoose
 import "dotenv/config";
 import mongoose from "mongoose";
-import dns from "node:dns";
-
-// Use Google public DNS so SRV lookups work on restrictive networks (like mobile hotspots)
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+// Use standard DNS resolution
+// (Removed manual DNS servers to prevent Vercel crashes)
 
 let isConnected = false;
 
