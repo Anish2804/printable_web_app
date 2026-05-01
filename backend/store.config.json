@@ -4,8 +4,8 @@
   "logoPath": "/logo.jpg",
   "currencySymbol": "₹",
   "pricing": {
-    "bwPerPage": 1,
-    "colorPerPage": 5,
+    "bwPerPage": 5,
+    "colorPerPage": 10,
     "duplexDiscountPercent": 0
   },
   "contact": {

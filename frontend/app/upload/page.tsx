@@ -434,7 +434,7 @@ export default function UploadPage() {
                 title="Choose print sides"
                 options={[
                   { value: "single", label: "Single side", icon: "📃" },
-                  { value: "double", label: "Both sides", sublabel: `${storeConfig.pricing.duplexDiscountPercent}% off`, icon: "📄" },
+                  { value: "double", label: "Both sides", sublabel: storeConfig.pricing.duplexDiscountPercent > 0 ? `${storeConfig.pricing.duplexDiscountPercent}% off` : undefined, icon: "📄" },
                 ]}
                 value={activeConfig.duplex ? "double" : "single"}
                 onChange={(v) => updateConfig(activeEntry.id, { duplex: v === "double" })}
