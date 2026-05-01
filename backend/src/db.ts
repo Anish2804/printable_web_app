@@ -2,8 +2,13 @@
 // MongoDB Atlas connection using Mongoose
 import "dotenv/config";
 import mongoose from "mongoose";
-// Use standard DNS resolution
-// (Removed manual DNS servers to prevent Vercel crashes)
+import dns from "node:dns";
+
+// Use Google public DNS ONLY if running locally (SRV lookups fail on some ISPs/hotspots)
+// Vercel environment sets VERCEL=1, so we skip it there to avoid crashes.
+if (!process.env.VERCEL) {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+}
 
 let isConnected = false;
 

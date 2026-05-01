@@ -13,6 +13,9 @@ import cron from "node-cron";
 
 const app = express();
 
+// Allow requests from Next.js frontend and Electron desktop
+app.use(cors());
+
 // Ensure DB is connected for every request (crucial for serverless)
 app.use(async (req, res, next) => {
   try {
@@ -22,9 +25,6 @@ app.use(async (req, res, next) => {
     res.status(500).json({ error: "Database connection failed" });
   }
 });
-
-// Allow requests from Next.js frontend and Electron desktop
-app.use(cors());
 
 // Parse JSON bodies — except for Razorpay webhook (needs raw body for signature verification)
 app.use((req, res, next) => {
