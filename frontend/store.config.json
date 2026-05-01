@@ -6,7 +6,7 @@
   "pricing": {
     "bwPerPage": 1,
     "colorPerPage": 5,
-    "duplexDiscountPercent": 0
+    "duplexDiscountPercent": 50
   },
   "contact": {
     "phone": "+91 9827004042"
